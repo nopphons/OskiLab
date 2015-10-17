@@ -13,12 +13,15 @@ import os
 #num_chunks = int(sys.argv[3])
 #python -i cosine_strain_parallel.py 'matched_42_83.csv' 'output_matched_42.csv' 16
 #WORD = re.compile(r'\w+')
+stem = sys.argv[4]
 stop =  stopwords.words('english')
 WORD = re.compile('[a-z]+')
 def text_to_vector(x):
     x = x.lower()
-    words = map(PorterStemmer().stem_word,WORD.findall(x))
-    words = [w for w in words if not w in stop]
+    words = WORD.findall(x)
+    if(stem == 1):
+        words = map(PorterStemmer().stem_word,WORD.findall(x))
+        words = [w for w in words if not w in stop]
     return Counter(words)
 
 def get_cosine(vec1, vec2):
