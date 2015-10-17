@@ -35,7 +35,7 @@ def get_cosine(vec1, vec2):
     else:
         return float(numerator) / denominator
 
-input = sys.argv[2]  #'Scrape50_53.csv'
+input = sys.argv[1]  #'Scrape50_53.csv'
 data = pd.read_csv(input)
 strain = data.loc[:,'strain'] #data.loc[:,'Strain']
 counts = strain.value_counts()
