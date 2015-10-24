@@ -57,19 +57,12 @@ nrow = len(regroup)/chunk + 1
 output = sys.argv[2]
 print "Number of Groups: " + str(len(regroup))
 
-def cosine_state_scrape_strain(regroup, start, end):
-    for index, group in enumerate(regroup):
-        if (index >= start and index < end):
-            scrape = group[0]
-            print "Scrape" + str(index)
-            cosine_strain(index, group[1], 0, len(group[1]), scrape)
-
 
 def cosine_strain(index, strain_grouped, start, end, scrape):
     #df = pd.DataFrame(columns=["Scrape","State","Strain1","Strain2", "Cosine Similarity"])
-    with open(output[:-4] + '_' + str(index) +'.csv', 'wb') as csvtarget:
+    with open(output[:-4] + '_' + str(index)+ '_' + str(start) + '-'+ str(end-1) +'.csv', 'wb') as csvtarget:
         chunk_writer = csv.writer(csvtarget)
-        chunk_writer.writerow(['scrape','med_rec1', 'med_rec2', 'state1', 'state2', 
+        chunk_writer.writerow(['scrape','med_rec1', 'med_rec2', 'state1', 'state2', 'imagekey1','imagekey2',
             'dispensaryname1','dispensaryname2','strain1' ,'strain2','med_rec_match','state_match','disp_match','strain_match','cosine'])
         num_strain = len(strain_grouped)
         strain_temp = strain_grouped.reset_index()
@@ -78,11 +71,13 @@ def cosine_strain(index, strain_grouped, start, end, scrape):
         for i in range(start, end):
             #print i
             med_rec1 = strain_temp['med_rec'][i]
+            img1 = strain_temp['imagekey'][i]
             state1 = strain_temp['st'][i]
             dispensaryname1 = strain_temp['dispensaryname'][i]
             strain1 = strain_temp['strain'][i]
             for j in range(i+1, num_strain):
                 med_rec2 = strain_temp['med_rec'][j]
+                img2 = strain_temp['imagekey'][j]
                 state2 = strain_temp['st'][j]
                 dispensaryname2 = strain_temp['dispensaryname'][j]
                 strain2 = strain_temp['strain'][j]
@@ -93,21 +88,25 @@ def cosine_strain(index, strain_grouped, start, end, scrape):
                 state_match = int(state1 == state2)
                 disp_match = int(dispensaryname1 == dispensaryname2)
                 strain_rec_match = int(strain1 == strain2)
-                chunk_writer.writerow([scrape, med_rec1, med_rec2, state1, state2, dispensaryname1, dispensaryname2,
+                chunk_writer.writerow([scrape, med_rec1, med_rec2, state1, state2, img1,img2, dispensaryname1, dispensaryname2,
                  strain1,strain2, med_rec_match, state_match, disp_match, strain_rec_match, cosine])
     return
 
-processes = [Process(target=cosine_state_scrape_strain, args=(regroup, x*nrow, (x+1)*nrow)) for x in range(chunk)]
-# Run processes
-for p in processes:
-    p.start()
 
-# Exit the completed processes
-for p in processes:
-    p.join()
-    #if p.is_alive():
-    #    print "ALIVE"
-    #   process.terminate()
+for index, group in enumerate(regroup):
+        scrape = group[0]
+        print "Scrape" + str(index)
+        nrow = len(group[1])/chunk + 1
+        processes = [Process(target=cosine_strain, args=(index, group[1], x*nrow, (x+1)*nrow,scrape)) for x in range(chunk)]
+        # Run processes
+        for p in processes:
+            p.start()
+
+        # Exit the completed processes
+        for p in processes:
+            p.join()
+            
+
 print "Finished Finding Cosine Similarities for all groups"
 #if(False):
 #    output_df = pd.DataFrame(columns=["Scrape","State","Strain1","Strain2", "Cosine Similarity"]); row = 0
