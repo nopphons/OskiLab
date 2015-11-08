@@ -27,7 +27,6 @@ def text_to_vector(x):
     words = WORD.findall(x)
     if(option4 == 1):
         words = map(PorterStemmer().stem_word,WORD.findall(x))
-        words = [w for w in words if not w in stop]
     if(option5 == 1):
         words = [w for w in words if w not in stop]
     return Counter(words)
