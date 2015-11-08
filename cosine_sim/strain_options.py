@@ -18,6 +18,7 @@ option1 = int(raw_input('Option 1: Concatenate by strain-scrape-st-rec: '))
 option2 = int(raw_input('Option 2: Compare observations that are in the same state: '))
 option3 = int(raw_input('Option 3: Compare observations that are in the same legal regime (REC): '))
 option4 = int(raw_input('Option 4: Do you want to stem English words?: '))
+option5 = int(raw_input('Option 5: Do you want to remove stop words?: '))
 stop =  stopwords.words('english')
 WORD = re.compile('[a-z]+')
 getcontext().prec = 4
@@ -27,6 +28,8 @@ def text_to_vector(x):
     if(option4 == 1):
         words = map(PorterStemmer().stem_word,WORD.findall(x))
         words = [w for w in words if not w in stop]
+    if(option5 == 1):
+        words = [w for w in words if w not in stop]
     return Counter(words)
 
 def get_cosine(vec1, vec2):
