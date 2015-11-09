@@ -65,7 +65,9 @@ def cosine_strain(index, subgroup, start, end):
         with open(output[:-4] + '_' + str(index)+ '_' + str(start) + '-'+ str(end-1) +'.csv', 'wb') as csvtarget:
             chunk_writer = csv.writer(csvtarget)
             chunk_writer.writerow(['scrape','med_rec1', 'med_rec2', 'state1', 'state2', 'imagekey1','imagekey2',
-                'dispensaryname1','dispensaryname2','strain1' ,'strain2','med_rec_match','state_match','disp_match','strain_match','cosine',
+                'dispensaryname1','dispensaryname2','strain1' ,'strain2','eighth1','eighth2','date1','date2','totalview1','totalview2',
+                'deliv1','deliv2','rating1','rating2','THC1','THC2','CBD1','CBD2','CBN1','CBN2','product1','product2','vote1','vote2',
+                'med_rec_match','state_match','disp_match','strain_match','cosine',
                 'price_dist', 'age_diff', 'pop_diff', 'form_dist', 'rating_dist','THC_diff','CBD_diff','CBN_diff','cat_match','vote_dist'])
             num_strain = len(subgroup)
             strain_temp = subgroup.reset_index()
@@ -134,7 +136,9 @@ def cosine_strain(index, subgroup, start, end):
                         vote_dist = abs(float(Decimal(vote1[:-1])-Decimal(vote2[:-1])))
 
                     chunk_writer.writerow([scrape, med_rec1, med_rec2, state1, state2, img1,img2, dispensaryname1, dispensaryname2,
-                     strain1,strain2, med_rec_match, state_match, disp_match, strain_match, cosine,price_dist,age_diff,pop_diff,
+                     strain1,strain2, price1,price2,date1,date2,totalview1,totalview2,deliv1,deliv2,rating1,rating2,THC1,THC2,
+                     CBD1,CBD2,CBN1,CBN2,product1,product2,vote1,vote2,
+                      med_rec_match, state_match, disp_match, strain_match, cosine,price_dist,age_diff,pop_diff,
                      form_dist,rating_dist,THC_diff,CBD_diff,CBN_diff,category_match, vote_dist])
     else:
         with open(output[:-4] + '_' + str(index)+ '_' + str(start) + '-'+ str(end-1) +'.csv', 'wb') as csvtarget:
