@@ -189,8 +189,10 @@ output = sys.argv[2]
 with open(output,'wb') as outfile:
     chunk_writer = csv.writer(outfile)
     chunk_writer.writerow(['scrape','med_rec1', 'med_rec2', 'state1', 'state2', 'imagekey1','imagekey2',
-            'dispensaryname1','dispensaryname2','strain1' ,'strain2','med_rec_match','state_match','disp_match','strain_match','cosine',
-            'price_dist', 'age_diff', 'pop_diff', 'form_dist', 'rating_dist','THC_diff','CBD_diff','CBN_diff','cat_match','vote_dist'])
+                'dispensaryname1','dispensaryname2','strain1' ,'strain2','eighth1','eighth2','date1','date2','totalview1','totalview2',
+                'deliv1','deliv2','rating1','rating2','THC1','THC2','CBD1','CBD2','CBN1','CBN2','product1','product2','vote1','vote2',
+                'med_rec_match','state_match','disp_match','strain_match','cosine',
+                'price_dist', 'age_diff', 'pop_diff', 'form_dist', 'rating_dist','THC_diff','CBD_diff','CBN_diff','cat_match','vote_dist'])
     for fname in os.listdir('.'):
         if fname.endswith('.csv') and fname.startswith(output[:-4]+'_'):
             towrite = open(fname, 'r').read()
