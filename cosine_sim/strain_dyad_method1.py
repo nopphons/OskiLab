@@ -58,13 +58,15 @@ def strain_dyad(index,data,start, end,method1):
     #df = pd.DataFrame(columns=["Scrape","State","Strain1","Strain2", "Cosine Similarity"])
     with open(output[:-4] + '_' + str(index)+ '_' + str(start) + '-'+ str(end-1) +'.csv', 'wb') as csvtarget:
         chunk_writer = csv.writer(csvtarget)
-        chunk_writer.writerow(['strain1','strain2','acquired1','acquired2','strain_same','date_distance','cosine_sim','review_dist','method1','method_dist','jaccard_sim','jaccard_flavor'])
+        chunk_writer.writerow(['strain1','strain2','acquired1','acquired2','strain_same','date_distance','cosine_sim',
+            'review_dist','method1','method_dist','jaccard_sim','jaccard_flavor', 'user_match','med_rec_match', 'dispensary_match'])
         rows = len(data)
         data = data.reset_index()
         if end > rows:
             end = rows
         for i in range(start, end):
-            #print i
+            user1 = data['username'][i]
+            med_rec1 = data['dispensarytype'][i]
             strain1 = data['strainname'][i]
             acquired1 = data['acquiredform'][i]
             date1 = data['date'][i]
@@ -81,7 +83,10 @@ def strain_dyad(index,data,start, end,method1):
                 flavor = data['flavor'+str(k)][i]
                 if flavor != " ":
                     jaccard_flavor1.add(flavor)
+
             for j in range(i+1, rows):
+                user2 = data['username'][j]
+                med_rec2 = data['dispensarytype'][j]
                 strain2 = data['strainname'][j]
                 acquired2 = data['acquiredform'][j]
                 date2 = data['date'][j]
@@ -95,7 +100,7 @@ def strain_dyad(index,data,start, end,method1):
                         jaccard2.add(effect)  
                 jaccard_flavor2 = set()
                 for k in range(1,6):
-                    flavor = data['flavor'+str(k)][i]
+                    flavor = data['flavor'+str(k)][j]
                     if flavor != " ":
                         jaccard_flavor2.add(flavor)
                 strainsame = int(strain1 == strain2) 
@@ -113,7 +118,11 @@ def strain_dyad(index,data,start, end,method1):
                     jaccard_flavor = float(len(jaccard_flavor2.intersection(jaccard_flavor1)))/len(jaccard_flavor2.union(jaccard_flavor1))
                 else:
                     jaccard_flavor = None
-                chunk_writer.writerow([strain1,strain2,acquired1,acquired2,strainsame,date_distance,cosine,review_distance,type_dist,method_dist,jaccard_sim,jaccard_flavor])
+                user_match = int(user1 == user2)
+                med_rec_match = int(med_rec1 == med_rec2)
+                dispensary_match = int(acquired1 == acquired2)
+                chunk_writer.writerow([strain1,strain2,acquired1,acquired2,strainsame,date_distance,cosine,
+                    review_distance,type_dist,method_dist,jaccard_sim,jaccard_flavor,user_match,med_rec_match,dispensary_match])
     return
 
 
