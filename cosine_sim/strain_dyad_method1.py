@@ -61,7 +61,7 @@ def strain_dyad(index,data,start, end,method1):
     with open(output[:-4] + '_' + str(index)+ '_' + str(start) + '-'+ str(end-1) +'.csv', 'wb') as csvtarget:
         chunk_writer = csv.writer(csvtarget)
         chunk_writer.writerow(['strain1','strain2','acquired1','acquired2','strain_same','date_distance','cosine_sim',
-            'review_dist','method1','method_dist','jaccard_sim','jaccard_flavor', 'user_match','med_rec_match', 'dispensary_match','vote_dist','yes_tot'])
+            'review_dist','method1','method_dist','jaccard_sim','jaccard_flavor', 'jaccard_lineage','user_match','med_rec_match', 'dispensary_match','vote_dist','yes_tot'])
         rows = len(data)
         data = data.reset_index()
         if end > rows:
@@ -86,6 +86,11 @@ def strain_dyad(index,data,start, end,method1):
                 flavor = data['flavor'+str(k)][i]
                 if flavor != " ":
                     jaccard_flavor1.add(flavor)
+            jaccard_lineage1 = set()
+            for k in range(1,6):
+                lineage = data['lineage'+str(k)][i]
+                if lineage != " ":
+                    jaccard_lineage1.add(lineage)
 
             for j in range(i+1, rows):
                 user2 = data['username'][j]
@@ -107,20 +112,27 @@ def strain_dyad(index,data,start, end,method1):
                     flavor = data['flavor'+str(k)][j]
                     if flavor != " ":
                         jaccard_flavor2.add(flavor)
+                jaccard_lineage2 = set()
+                for k in range(1,6):
+                    lineage = data['lineage'+str(k)][j]
+                    if lineage != " ":
+                        jaccard_lineage2.add(lineage)
                 strainsame = int(strain1 == strain2) 
                 date_distance = abs((parser.parse(date1)- parser.parse(date2)).days)
                 cosine = get_cosine(text_to_vector(review1), text_to_vector(review2))
                 review_distance = abs(numstars1-numstars2)
                 type_dist = method1
                 method_dist = int(method1 != method2)
+                jaccard_sim = ' '; jaccard_flavor = ' '; jaccard_linage = ' ';
                 if len(jaccard2.union(jaccard1)) != 0:
                     jaccard_sim = float(len(jaccard2.intersection(jaccard1)))/len(jaccard2.union(jaccard1))
-                else:
-                    jaccard_sim = None
+            
                 if len(jaccard_flavor2.union(jaccard_flavor1)) != 0:
                     jaccard_flavor = float(len(jaccard_flavor2.intersection(jaccard_flavor1)))/len(jaccard_flavor2.union(jaccard_flavor1))
-                else:
-                    jaccard_flavor = None
+                
+                if len(jaccard_lineage2.union(jaccard_lineage1)) != 0:
+                    jaccard_lineage = float(len(jaccard_lineage2.intersection(jaccard_lineage1)))/len(jaccard_lineage2.union(jaccard_lineage1))
+                
                 user_match = int(user1 == user2)
                 med_rec_match = int(med_rec1 == med_rec2)
                 dispensary_match = int(acquired1 == acquired2)
@@ -129,7 +141,7 @@ def strain_dyad(index,data,start, end,method1):
                     vote_dist = abs(float(Decimal(yesper1[:-1])-Decimal(yesper2[:-1])))
                     yes_tot = abs(float(Decimal(yesper1[:-1])+Decimal(yesper2[:-1])))
                 chunk_writer.writerow([strain1,strain2,acquired1,acquired2,strainsame,date_distance,cosine,
-                    review_distance,type_dist,method_dist,jaccard_sim,jaccard_flavor,user_match,med_rec_match,dispensary_match,vote_dist,yes_tot])
+                    review_distance,type_dist,method_dist,jaccard_sim,jaccard_flavor,jaccard_lineage,user_match,med_rec_match,dispensary_match,vote_dist,yes_tot])
     return
 
 
